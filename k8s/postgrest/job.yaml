@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-data
+  namespace: postgrest
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: seed
+          image: postgres:16-alpine
+          env:
+            - name: PGURI
+              valueFrom:
+                secretKeyRef:
+                  name: postgrest-config
+                  key: PGRST_DB_URI
+          command:
+            - sh
+            - -c
+            - |
+              psql "$PGURI" -c "
+                CREATE TABLE IF NOT EXISTS employees (
+                  id         SERIAL PRIMARY KEY,
+                  name       TEXT          NOT NULL,
+                  role       TEXT          NOT NULL,
+                  department TEXT          NOT NULL,
+                  salary     NUMERIC(10,2) NOT NULL
+                );
+              " && \
+              psql "$PGURI" -c "
+                INSERT INTO employees (name, role, department, salary) VALUES
+                  ('Alice Nguyen',  'Platform Engineer', 'Infrastructure', 95000.00),
+                  ('Bob Kaminsky',  'Backend Engineer',  'Engineering',    88000.00),
+                  ('Carol Mbeki',   'Security Engineer', 'Infrastructure', 92000.00),
+                  ('Dan Osei',      'DevOps Engineer',   'Infrastructure', 91000.00),
+                  ('Eve Larsson',   'Frontend Engineer', 'Engineering',    85000.00)
+                ON CONFLICT DO NOTHING;
+              "

@@ -18,3 +18,8 @@ output "postgres_connection_string" {
   value       = "postgresql://postgres:${var.postgres_password}@localhost:${var.postgres_port}/app"
   sensitive   = true
 }
+
+output "postgrest_endpoint" {
+  description = "Browser URL for the PostgREST REST API"
+  value       = "http://localhost:8080/employees"
+}

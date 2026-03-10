@@ -11,7 +11,7 @@ variable "k3s_version" {
 }
 
 variable "postgres_password" {
-  description = "Password for the PostgreSQL instance"
+  description = "Password for the PostgreSQL postgres superuser"
   type        = string
   default     = "postgres"
   sensitive   = true
@@ -20,5 +20,18 @@ variable "postgres_password" {
 variable "postgres_port" {
   description = "Host port to expose PostgreSQL on"
   type        = number
-  default     = 5432
+  default     = 5435
+}
+
+variable "postgrest_db_user" {
+  description = "Superuser role created in the postgrest database for PostgREST"
+  type        = string
+  default     = "postgrest_user"
+}
+
+variable "postgrest_db_password" {
+  description = "Password for the postgrest superuser role"
+  type        = string
+  default     = "postgrest_password"
+  sensitive   = true
 }
